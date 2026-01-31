@@ -336,7 +336,7 @@ export default function Analyze() {
       const clicks = parseNum(row['点击量'] || row['Clicks'] || row['点击次数'] || 0);
       const spend = parseNum(row['花费'] || row['Spend'] || row['支出'] || row['Cost'] || 0);
       const sales = parseNum(row['销售额'] || row['Sales'] || row['7天总销售额'] || row['7 Day Total Sales'] || 0);
-      const orders = parseNum(row['订单'] || row['Orders'] || row['7天总订单数'] || row['7 Day Total Orders (#)'] || 0);
+      const orders = parseNum(row['订单'] || row['Orders'] || row['7天总订单数'] || row['7天总订单数(#)'] || row['7 Day Total Orders (#)'] || row['7 Day Total Orders'] || 0);
       
       return { searchTerm, impressions, clicks, spend, sales, orders };
     }).filter(d => d.searchTerm);

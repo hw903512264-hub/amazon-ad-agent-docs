@@ -80,7 +80,7 @@ export function parseExcelData(rows: Record<string, unknown>[]): SearchTermData[
     const clicks = parseNumber(row['点击量'] || row['Clicks'] || row['点击次数'] || 0);
     const spend = parseNumber(row['花费'] || row['Spend'] || row['支出'] || row['Cost'] || 0);
     const sales = parseNumber(row['销售额'] || row['Sales'] || row['7天总销售额'] || row['7 Day Total Sales'] || 0);
-    const orders = parseNumber(row['订单'] || row['Orders'] || row['7天总订单数'] || row['7 Day Total Orders (#)'] || 0);
+    const orders = parseNumber(row['订单'] || row['Orders'] || row['7天总订单数'] || row['7天总订单数(#)'] || row['7 Day Total Orders (#)'] || row['7 Day Total Orders'] || 0);
     
     // Calculate metrics
     const acos = sales > 0 ? (spend / sales) * 100 : 0;
