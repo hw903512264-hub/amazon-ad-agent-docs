@@ -14,8 +14,10 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
 import { toast } from "sonner";
 import { motion } from "framer-motion";
+import { Link } from "wouter";
 import {
   Bot,
+  Upload,
   BarChart3,
   Search,
   Link2,
@@ -208,7 +210,13 @@ function OverviewSection() {
               一个自动化的亚马逊广告优化工具，可以分析搜索词报告、拓展关键词、优化产品链接，并生成带颜色标注的Excel优化报告。
             </p>
             <div className="flex flex-wrap gap-3">
-              <Button className="gap-2">
+              <Link href="/analyze">
+                <Button className="gap-2 bg-gradient-to-r from-primary to-blue-600 hover:from-primary/90 hover:to-blue-600/90">
+                  <Upload className="h-4 w-4" />
+                  在线分析
+                </Button>
+              </Link>
+              <Button className="gap-2" variant="outline">
                 <Download className="h-4 w-4" />
                 下载智能体
               </Button>
