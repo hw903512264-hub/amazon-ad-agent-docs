@@ -12,6 +12,13 @@ import {
 } from "./db";
 import { analyzeSearchTerms, parseExcelData, AnalysisSummary } from "./adAnalyzer";
 import { expandKeywords, suggestFromSearchTerms } from "./keywordExpander";
+import { 
+  analyzeFeatureWords, 
+  generateKeywordSuggestions,
+  getHighPerformingFeatureWords,
+  getProblemFeatureWords,
+  SearchTermInput 
+} from "./featureWordAnalyzer";
 import { storagePut } from "./storage";
 import { nanoid } from "nanoid";
 
@@ -188,6 +195,85 @@ export const appRouter = router({
           success: true,
           suggestions,
           totalSuggestions: suggestions.length,
+        };
+      }),
+
+    // Analyze feature words from search terms (based on 特征词分析工具V1.12.2)
+    analyzeFeatureWords: protectedProcedure
+      .input(z.object({
+        reportId: z.number(),
+      }))
+      .query(async ({ ctx, input }) => {
+        const report = await getAnalysisReportById(input.reportId);
+        
+        if (!report || report.userId !== ctx.user.id) {
+          throw new Error("Report not found");
+        }
+        
+        if (!report.analysisResult) {
+          throw new Error("Report has no analysis results");
+        }
+        
+        const analysisResult = report.analysisResult as unknown as AnalysisSummary;
+        
+        // Convert to SearchTermInput format
+        const searchTerms: SearchTermInput[] = analysisResult.results?.map(r => ({
+          searchTerm: r.searchTerm,
+          impressions: r.impressions,
+          clicks: r.clicks,
+          spend: r.spend,
+          sales: r.sales,
+          orders: r.orders,
+        })) || [];
+        
+        // Analyze feature words
+        const featureWordAnalysis = analyzeFeatureWords(searchTerms);
+        
+        // Generate keyword suggestions based on feature words
+        const suggestions = generateKeywordSuggestions(featureWordAnalysis);
+        
+        // Get high performers and problem words
+        const highPerformers = getHighPerformingFeatureWords(featureWordAnalysis);
+        const problemWords = getProblemFeatureWords(featureWordAnalysis);
+        
+        return {
+          success: true,
+          analysis: featureWordAnalysis,
+          suggestions,
+          highPerformers: highPerformers.slice(0, 20),
+          problemWords: problemWords.slice(0, 20),
+        };
+      }),
+
+    // Direct feature word analysis from uploaded data
+    analyzeFeatureWordsDirect: protectedProcedure
+      .input(z.object({
+        searchTerms: z.array(z.object({
+          searchTerm: z.string(),
+          impressions: z.number().optional(),
+          clicks: z.number().optional(),
+          spend: z.number().optional(),
+          sales: z.number().optional(),
+          orders: z.number().optional(),
+        })),
+      }))
+      .mutation(async ({ input }) => {
+        // Analyze feature words
+        const featureWordAnalysis = analyzeFeatureWords(input.searchTerms);
+        
+        // Generate keyword suggestions based on feature words
+        const suggestions = generateKeywordSuggestions(featureWordAnalysis);
+        
+        // Get high performers and problem words
+        const highPerformers = getHighPerformingFeatureWords(featureWordAnalysis);
+        const problemWords = getProblemFeatureWords(featureWordAnalysis);
+        
+        return {
+          success: true,
+          analysis: featureWordAnalysis,
+          suggestions,
+          highPerformers: highPerformers.slice(0, 20),
+          problemWords: problemWords.slice(0, 20),
         };
       }),
   }),
