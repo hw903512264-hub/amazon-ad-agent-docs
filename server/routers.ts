@@ -11,6 +11,7 @@ import {
   deleteAnalysisReport
 } from "./db";
 import { analyzeSearchTerms, parseExcelData, AnalysisSummary } from "./adAnalyzer";
+import { expandKeywords, suggestFromSearchTerms } from "./keywordExpander";
 import { storagePut } from "./storage";
 import { nanoid } from "nanoid";
 
@@ -129,6 +130,65 @@ export const appRouter = router({
         
         await deleteAnalysisReport(input.id);
         return { success: true };
+      }),
+  }),
+
+  // Keyword expansion router
+  keywords: router({
+    // Expand keywords using AI
+    expand: protectedProcedure
+      .input(z.object({
+        seedKeywords: z.array(z.string()).min(1).max(10),
+        productDescription: z.string().min(10).max(2000),
+        targetMarket: z.string().optional().default('US'),
+        maxSuggestions: z.number().optional().default(30),
+      }))
+      .mutation(async ({ input }) => {
+        const result = await expandKeywords(
+          input.seedKeywords,
+          input.productDescription,
+          input.targetMarket,
+          input.maxSuggestions
+        );
+        
+        return {
+          success: true,
+          ...result
+        };
+      }),
+
+    // Suggest keywords from search term analysis
+    suggestFromAnalysis: protectedProcedure
+      .input(z.object({
+        reportId: z.number(),
+        targetAcos: z.number().optional().default(30),
+      }))
+      .query(async ({ ctx, input }) => {
+        const report = await getAnalysisReportById(input.reportId);
+        
+        if (!report || report.userId !== ctx.user.id) {
+          throw new Error("Report not found");
+        }
+        
+        if (!report.analysisResult) {
+          throw new Error("Report has no analysis results");
+        }
+        
+        const analysisResult = report.analysisResult as unknown as AnalysisSummary;
+        const searchTerms = analysisResult.results?.map(r => ({
+          term: r.searchTerm,
+          orders: r.orders,
+          acos: r.acos,
+          clicks: r.clicks,
+        })) || [];
+        
+        const suggestions = suggestFromSearchTerms(searchTerms, input.targetAcos);
+        
+        return {
+          success: true,
+          suggestions,
+          totalSuggestions: suggestions.length,
+        };
       }),
   }),
 });

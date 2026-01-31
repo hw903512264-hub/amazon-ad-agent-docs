@@ -216,6 +216,12 @@ function OverviewSection() {
                   在线分析
                 </Button>
               </Link>
+              <Link href="/keywords">
+                <Button className="gap-2 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-500/90 hover:to-teal-600/90">
+                  <Search className="h-4 w-4" />
+                  关键词拓展
+                </Button>
+              </Link>
               <Button className="gap-2" variant="outline">
                 <Download className="h-4 w-4" />
                 下载智能体
