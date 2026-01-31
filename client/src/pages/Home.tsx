@@ -50,7 +50,8 @@ import {
   BookOpen,
   Shield,
   Globe,
-  Package
+  Package,
+  Hash
 } from "lucide-react";
 
 // Code block component with copy functionality
@@ -222,6 +223,12 @@ function OverviewSection() {
                   关键词拓展
                 </Button>
               </Link>
+              <Link href="/feature-words">
+                <Button className="gap-2 bg-gradient-to-r from-purple-500 to-violet-600 hover:from-purple-500/90 hover:to-violet-600/90">
+                  <Hash className="h-4 w-4" />
+                  特征词分析
+                </Button>
+              </Link>
               <Button className="gap-2" variant="outline">
                 <Download className="h-4 w-4" />
                 下载智能体
@@ -274,6 +281,12 @@ function FeaturesSection() {
       title: "关键词拓展",
       description: "使用AI自动拓展相关关键词，发现新的投放机会",
       color: "bg-emerald-500/20 text-emerald-400",
+    },
+    {
+      icon: Hash,
+      title: "特征词分析",
+      description: "拆分搜索词为特征词，聚合分析各特征词的表现指标",
+      color: "bg-violet-500/20 text-violet-400",
     },
     {
       icon: Link2,

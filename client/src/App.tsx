@@ -7,6 +7,7 @@ import { ThemeProvider } from "./contexts/ThemeContext";
 import Home from "./pages/Home";
 import Analyze from "./pages/Analyze";
 import Keywords from "./pages/Keywords";
+import FeatureWords from "./pages/FeatureWords";
 
 function Router() {
   // make sure to consider if you need authentication for certain routes
@@ -15,6 +16,7 @@ function Router() {
       <Route path={"/"} component={Home} />
       <Route path={"/analyze"} component={Analyze} />
       <Route path={"/keywords"} component={Keywords} />
+      <Route path={"/feature-words"} component={FeatureWords} />
       <Route path={"/404"} component={NotFound} />
       <Route component={NotFound} />
     </Switch>
