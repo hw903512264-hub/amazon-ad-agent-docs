@@ -215,6 +215,8 @@ function ResultsTable({ results, filter }: { results: AnalysisResult[]; filter: 
         <thead>
           <tr className="border-b border-border/50 bg-white/5">
             <th className="text-left p-3 font-medium">搜索词</th>
+            <th className="text-left p-3 font-medium bg-emerald-500/10 border-l border-emerald-500/30">广告活动</th>
+            <th className="text-left p-3 font-medium bg-emerald-500/10 border-r border-emerald-500/30">广告组</th>
             <th className="text-right p-3 font-medium">展示量</th>
             <th className="text-right p-3 font-medium">点击</th>
             <th className="text-right p-3 font-medium">花费</th>
@@ -240,6 +242,12 @@ function ResultsTable({ results, filter }: { results: AnalysisResult[]; filter: 
             >
               <td className="p-3 font-medium max-w-[200px] truncate" title={result.searchTerm}>
                 {result.searchTerm}
+              </td>
+              <td className="p-3 max-w-[150px] truncate bg-emerald-500/5 border-l border-emerald-500/20" title={result.campaign || '-'}>
+                <span className="text-emerald-400">{result.campaign || '-'}</span>
+              </td>
+              <td className="p-3 max-w-[120px] truncate bg-emerald-500/5 border-r border-emerald-500/20" title={result.adGroup || '-'}>
+                <span className="text-emerald-300">{result.adGroup || '-'}</span>
               </td>
               <td className="p-3 text-right">{result.impressions.toLocaleString()}</td>
               <td className="p-3 text-right">{result.clicks}</td>
@@ -337,8 +345,10 @@ export default function Analyze() {
       const spend = parseNum(row['花费'] || row['Spend'] || row['支出'] || row['Cost'] || 0);
       const sales = parseNum(row['销售额'] || row['Sales'] || row['7天总销售额'] || row['7 Day Total Sales'] || 0);
       const orders = parseNum(row['订单'] || row['Orders'] || row['7天总订单数'] || row['7天总订单数(#)'] || row['7 Day Total Orders (#)'] || row['7 Day Total Orders'] || 0);
+      const campaign = String(row['广告活动名称'] || row['Campaign Name'] || row['广告活动'] || row['Campaign'] || '');
+      const adGroup = String(row['广告组名称'] || row['Ad Group Name'] || row['广告组'] || row['Ad Group'] || '');
       
-      return { searchTerm, impressions, clicks, spend, sales, orders };
+      return { searchTerm, impressions, clicks, spend, sales, orders, campaign, adGroup };
     }).filter(d => d.searchTerm);
 
     const totalSpend = data.reduce((sum, d) => sum + d.spend, 0);
@@ -400,6 +410,8 @@ export default function Analyze() {
       
       return {
         searchTerm: term.searchTerm,
+        campaign: term.campaign,
+        adGroup: term.adGroup,
         impressions: term.impressions,
         clicks: term.clicks,
         spend: term.spend,
